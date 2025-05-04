@@ -110,7 +110,14 @@ socket.on('showCorrect', users => {
 });
 
 socket.on('winner', winner => {
-    document.getElementById('winner').innerText = 'Winner: ' + (winner ? winner : 'No winner');
+    const winnerDiv = document.getElementById('winner');
+    if (winner) {
+        winnerDiv.innerText = 'Winner: ' + winner;
+        winnerDiv.style.color = 'var(--success)';
+    } else {
+        winnerDiv.innerText = 'Winner: No winner';
+        winnerDiv.style.color = 'var(--danger)';
+    }
 });
 
 socket.on('quizFinished', ({ winnersHistory, questions }) => {
