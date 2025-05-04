@@ -28,8 +28,6 @@ function resetHostUI() {
     document.getElementById('winner').innerText = '';
     document.getElementById('correctUsers').innerHTML = '';
     document.getElementById('correctCount').innerText = '';
-    // Hide winner's summary section
-    document.querySelector('.summary-section').style.display = 'none';
     // Hide correct users list
     document.querySelector('.user-list-card h3').style.visibility = 'hidden';
     document.getElementById('correctUsers').style.display = 'none';
@@ -39,6 +37,16 @@ function resetHostUI() {
         restartBtn.style.display = '';
         restartBtn.disabled = false;
     }
+    // Hide and clear winners summary and its title
+    const summaryTitle = document.getElementById('summaryTitle');
+    const winnersSummary = document.getElementById('winnersSummary');
+    if (summaryTitle) summaryTitle.style.display = 'none';
+    if (winnersSummary) {
+        winnersSummary.style.display = 'none';
+        winnersSummary.innerHTML = '';
+    }
+    // Show correct users section on reset
+    document.querySelectorAll('.user-list-card')[0].style.display = '';
 }
 
 function restartQuiz() {
@@ -106,8 +114,15 @@ socket.on('winner', winner => {
 });
 
 socket.on('quizFinished', ({ winnersHistory, questions }) => {
-    document.getElementById('winnersSummary').innerHTML = renderWinnersSummary(winnersHistory, questions);
-    document.querySelector('.summary-section').style.display = '';
+    // Hide correct users section when showing winners summary
+    document.querySelectorAll('.user-list-card')[0].style.display = 'none';
+    const summaryTitle = document.getElementById('summaryTitle');
+    const winnersSummary = document.getElementById('winnersSummary');
+    if (summaryTitle) summaryTitle.style.display = 'block';
+    if (winnersSummary) {
+        winnersSummary.style.display = 'block';
+        winnersSummary.innerHTML = renderWinnersSummary(winnersHistory, questions);
+    }
     document.getElementById('winner').innerText = '';
     updateButtonStates('finish');
     const restartBtn = document.getElementById('restartBtn');
@@ -130,12 +145,21 @@ socket.on('hostError', msg => {
 socket.on('quizRestarted', () => {
     // Only update the UI, don't emit another event
     resetHostUI();
-    // Always show the restart button
     const restartBtn = document.getElementById('restartBtn');
     if (restartBtn) {
         restartBtn.style.display = '';
         restartBtn.disabled = false;
     }
+    // Hide and clear winners summary and its title on restart
+    const summaryTitle = document.getElementById('summaryTitle');
+    const winnersSummary = document.getElementById('winnersSummary');
+    if (summaryTitle) summaryTitle.style.display = 'none';
+    if (winnersSummary) {
+        winnersSummary.style.display = 'none';
+        winnersSummary.innerHTML = '';
+    }
+    // Show correct users section again
+    document.querySelectorAll('.user-list-card')[0].style.display = '';
 });
 
 socket.on('questionStarted', () => {
@@ -156,11 +180,19 @@ window.onload = () => {
         restartBtn.onclick = restartQuiz;
         restartBtn.style.display = '';
     }
-    // Hide winner's summary section on load
-    document.querySelector('.summary-section').style.display = 'none';
     // Hide correct users list on load
     document.querySelector('.user-list-card h3').style.visibility = 'hidden';
     document.getElementById('correctUsers').style.display = 'none';
+    // Hide and clear winners summary and its title on load
+    const summaryTitle = document.getElementById('summaryTitle');
+    const winnersSummary = document.getElementById('winnersSummary');
+    if (summaryTitle) summaryTitle.style.display = 'none';
+    if (winnersSummary) {
+        winnersSummary.style.display = 'none';
+        winnersSummary.innerHTML = '';
+    }
+    // Show correct users section on load
+    document.querySelectorAll('.user-list-card')[0].style.display = '';
 };
 
 function renderWinnersSummary(winnersHistory, questions) {
