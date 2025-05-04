@@ -25,6 +25,7 @@ let winnersHistory = [];
 app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', (socket) => {
+    let hasJoined = false;
     // Host identification
     socket.on('host-join', () => {
         hostSocketId = socket.id;
@@ -41,11 +42,29 @@ io.on('connection', (socket) => {
             return;
         }
         users[socket.id] = { username, correct: false };
+        hasJoined = true;
         socket.emit('joined', username);
         if (hostSocketId) {
             io.to(hostSocketId).emit('userList', Object.values(users).map(u => u.username));
         }
     });
+
+    // Only send updates to users who have joined
+    function emitToJoined(event, data) {
+        for (const [id, user] of Object.entries(users)) {
+            io.to(id).emit(event, data);
+        }
+    }
+
+    // Only send updates to users who have joined, AND to the host if needed
+    function emitToJoinedAndHost(event, data) {
+        for (const [id, user] of Object.entries(users)) {
+            io.to(id).emit(event, data);
+        }
+        if (hostSocketId) {
+            io.to(hostSocketId).emit(event, data);
+        }
+    }
 
     // Host starts a question
     socket.on('startQuestion', () => {
@@ -60,12 +79,13 @@ io.on('connection', (socket) => {
         correctUsers = [];
         currentQuestion = questions[questionIndex];
         Object.keys(users).forEach(id => users[id].answered = false);
-        io.emit('question', {
+        emitToJoinedAndHost('question', {
             text: currentQuestion.text,
             options: currentQuestion.options,
             number: questionIndex + 1,
             total: questions.length
         });
+        if (hostSocketId) io.to(hostSocketId).emit('questionStarted');
     });
 
     // User submits answer
@@ -89,7 +109,7 @@ io.on('connection', (socket) => {
         Object.keys(users).forEach(id => {
             if (!users[id].answered) users[id].correct = false;
         });
-        io.emit('showCorrect', correctUsers);
+        emitToJoinedAndHost('showCorrect', correctUsers);
     });
 
     // Host moves to next question
@@ -102,23 +122,28 @@ io.on('connection', (socket) => {
             correctUsers = [];
             currentQuestion = questions[questionIndex];
             Object.keys(users).forEach(id => users[id].answered = false);
-            io.emit('question', {
+            emitToJoinedAndHost('question', {
                 text: currentQuestion.text,
                 options: currentQuestion.options,
                 number: questionIndex + 1,
                 total: questions.length
             });
         } else {
-            io.emit('quizFinished', { winnersHistory, questions });
+            emitToJoinedAndHost('quizFinished', { winnersHistory, questions });
         }
     });
 
     // Host picks a winner
     socket.on('pickWinner', () => {
-        if (socket.id !== hostSocketId || correctUsers.length === 0) return;
-        const winner = correctUsers[Math.floor(Math.random() * correctUsers.length)];
-        winnersHistory[questionIndex] = winner;
-        io.emit('winner', winner);
+        if (socket.id !== hostSocketId) return;
+        let winner = null;
+        if (correctUsers.length > 0) {
+            winner = correctUsers[Math.floor(Math.random() * correctUsers.length)];
+            winnersHistory[questionIndex] = winner;
+        } else {
+            winnersHistory[questionIndex] = null;
+        }
+        emitToJoinedAndHost('winner', winner);
     });
 
     // Host restarts the quiz
@@ -128,7 +153,7 @@ io.on('connection', (socket) => {
         currentQuestion = null;
         questionIndex = 0;
         winnersHistory = [];
-        io.emit('quizRestarted');
+        emitToJoinedAndHost('quizRestarted');
     });
 
     // Handle disconnections

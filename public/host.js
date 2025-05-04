@@ -6,7 +6,7 @@ socket.emit('host-join');
 
 function startQuestion() {
     socket.emit('startQuestion');
-    updateButtonStates('start');
+    // Do not update button states here; wait for server confirmation
 }
 
 function endQuestion() {
@@ -35,7 +35,10 @@ function resetHostUI() {
     document.getElementById('correctUsers').style.display = 'none';
     // Always show the restart button
     const restartBtn = document.getElementById('restartBtn');
-    if (restartBtn) restartBtn.style.display = '';
+    if (restartBtn) {
+        restartBtn.style.display = '';
+        restartBtn.disabled = false;
+    }
 }
 
 function restartQuiz() {
@@ -99,7 +102,7 @@ socket.on('showCorrect', users => {
 });
 
 socket.on('winner', winner => {
-    document.getElementById('winner').innerText = "Winner: " + winner;
+    document.getElementById('winner').innerText = 'Winner: ' + (winner ? winner : 'No winner');
 });
 
 socket.on('quizFinished', ({ winnersHistory, questions }) => {
@@ -108,7 +111,10 @@ socket.on('quizFinished', ({ winnersHistory, questions }) => {
     document.getElementById('winner').innerText = '';
     updateButtonStates('finish');
     const restartBtn = document.getElementById('restartBtn');
-    if (restartBtn) restartBtn.style.display = '';
+    if (restartBtn) {
+        restartBtn.style.display = '';
+        restartBtn.disabled = false;
+    }
 });
 
 socket.on('userList', users => {
@@ -126,7 +132,14 @@ socket.on('quizRestarted', () => {
     resetHostUI();
     // Always show the restart button
     const restartBtn = document.getElementById('restartBtn');
-    if (restartBtn) restartBtn.style.display = '';
+    if (restartBtn) {
+        restartBtn.style.display = '';
+        restartBtn.disabled = false;
+    }
+});
+
+socket.on('questionStarted', () => {
+    updateButtonStates('start');
 });
 
 // Create the restart button on page load

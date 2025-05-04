@@ -2,6 +2,12 @@
 const socket = io();
 let username = "";
 
+function setMainTitle(text) {
+    document.getElementById('mainTitle').innerText = text;
+}
+
+setMainTitle('Join the Quiz');
+
 function join() {
     username = document.getElementById('username').value;
     if (!username) return;
@@ -27,6 +33,7 @@ socket.on('joined', (name) => {
     document.getElementById('username').style.display = 'none';
     document.querySelector('button[onclick="join()"]').style.display = 'none';
     clearUI();
+    setMainTitle('Waiting for host to start game...');
 });
 
 socket.on('joinError', (msg) => {
@@ -34,7 +41,9 @@ socket.on('joinError', (msg) => {
 });
 
 socket.on('question', (q) => {
-    document.getElementById('question').innerText = q.text;
+    setMainTitle(q.text);
+    // Remove question text from body, only show options and progress
+    document.getElementById('question').innerText = '';
     document.getElementById('result').innerText = '';
     document.getElementById('progress').innerText = `Question ${q.number} of ${q.total}`;
     document.getElementById('winner').innerText = '';
@@ -54,14 +63,17 @@ socket.on('answerResult', (correct) => {
 });
 
 socket.on('showCorrect', (users) => {
-    document.getElementById('result').innerText = `Correct users: ${users.join(', ')}`;
+    // Disable all option buttons so users can't answer after question ends
+    Array.from(document.getElementsByClassName('option-btn')).forEach(b => b.disabled = true);
 });
 
 socket.on('winner', (winner) => {
-    document.getElementById('winner').innerText = "Winner: " + winner;
+    document.getElementById('winner').innerText = 'Winner: ' + (winner ? winner : 'No winner');
 });
 
 socket.on('quizFinished', ({ winnersHistory, questions }) => {
+    clearUI();
+    // Render the winners summary table in the mainTitle area
     function renderWinnersSummary(winnersHistory, questions) {
         if (!Array.isArray(winnersHistory) || !Array.isArray(questions)) return '';
         let html = '<h3>Winners Summary</h3><table class="winner-table">';
@@ -69,19 +81,20 @@ socket.on('quizFinished', ({ winnersHistory, questions }) => {
         for (let i = 0; i < questions.length; i++) {
             html += `<tr><td>${i + 1}</td><td>${questions[i].text}</td><td>`;
             if (winnersHistory[i]) {
-                html += `<span class="winner-badge">${winnersHistory[i]}</span>`;
+                html += `<span class=\"winner-badge\">${winnersHistory[i]}</span>`;
             } else {
-                html += '<span class="no-winner">No winner</span>';
+                html += '<span class=\"no-winner\">No winner</span>';
             }
             html += '</td></tr>';
         }
         html += '</table>';
         return html;
     }
-    clearUI();
-    document.getElementById('winner').innerHTML = renderWinnersSummary(winnersHistory, questions);
+    document.getElementById('mainTitle').innerHTML = renderWinnersSummary(winnersHistory, questions);
+    document.getElementById('winner').innerHTML = '';
 });
 
 socket.on('quizRestarted', () => {
     clearUI();
+    setMainTitle('Waiting for host to start game...');
 });
