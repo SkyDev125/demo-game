@@ -73,10 +73,10 @@ socket.on('winner', (winner) => {
 
 socket.on('quizFinished', ({ winnersHistory, questions }) => {
     clearUI();
-    // Render the winners summary table in the mainTitle area
+    // Render the winners summary table in the winnersSummary div (not in the mainTitle)
     function renderWinnersSummary(winnersHistory, questions) {
         if (!Array.isArray(winnersHistory) || !Array.isArray(questions)) return '';
-        let html = '<h3>Winners Summary</h3><table class="winner-table">';
+        let html = '<table class="winner-table">';
         html += '<tr><th>#</th><th>Question</th><th>Winner</th></tr>';
         for (let i = 0; i < questions.length; i++) {
             html += `<tr><td>${i + 1}</td><td>${questions[i].text}</td><td>`;
@@ -90,11 +90,13 @@ socket.on('quizFinished', ({ winnersHistory, questions }) => {
         html += '</table>';
         return html;
     }
-    document.getElementById('mainTitle').innerHTML = renderWinnersSummary(winnersHistory, questions);
+    setMainTitle('Winners Summary');
+    document.getElementById('winnersSummary').innerHTML = renderWinnersSummary(winnersHistory, questions);
     document.getElementById('winner').innerHTML = '';
 });
 
 socket.on('quizRestarted', () => {
     clearUI();
     setMainTitle('Waiting for host to start game...');
+    document.getElementById('winnersSummary').innerHTML = '';
 });
