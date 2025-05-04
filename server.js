@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,11 +14,14 @@ let users = {};
 let correctUsers = [];
 let questionActive = false;
 let currentQuestion = null;
-let questions = [
-    { text: 'What is 2 + 2?', options: ['3', '4', '5', '6'], answer: '4' },
-    { text: 'What is the capital of France?', options: ['London', 'Berlin', 'Paris', 'Rome'], answer: 'Paris' },
-    { text: 'What color is the sky on a clear day?', options: ['Red', 'Blue', 'Green', 'Yellow'], answer: 'Blue' }
-];
+let questions = [];
+try {
+    const questionsData = fs.readFileSync(path.join(__dirname, 'public', 'questions.json'), 'utf8');
+    questions = JSON.parse(questionsData);
+} catch (e) {
+    console.error('Failed to load questions.json:', e);
+    questions = [];
+}
 let questionIndex = 0;
 let hostSocketId = null;
 let winnersHistory = [];

@@ -1,5 +1,42 @@
 [
-  { "text": "What is 2 + 2?" },
-  { "text": "What is the capital of France?" },
-  { "text": "What color is the sky on a clear day?" }
+    {
+        "text": "What is 2 + 2?",
+        "options": [
+            "3",
+            "4",
+            "5",
+            "6"
+        ],
+        "answer": "4"
+    },
+    {
+        "text": "What is the capital of France?",
+        "options": [
+            "London",
+            "Berlin",
+            "Paris",
+            "Rome"
+        ],
+        "answer": "Paris"
+    },
+    {
+        "text": "What color is the sky on a clear day?",
+        "options": [
+            "Red",
+            "Blue",
+            "Green",
+            "Yellow"
+        ],
+        "answer": "Blue"
+    },
+    {
+        "text": "What is the largest planet in our solar system?",
+        "options": [
+            "Earth",
+            "Mars",
+            "Jupiter",
+            "Saturn"
+        ],
+        "answer": "Jupiter"
+    }
 ]
