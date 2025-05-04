@@ -27,6 +27,15 @@ function resetHostUI() {
     document.getElementById('quizProgress').innerText = '';
     document.getElementById('winner').innerText = '';
     document.getElementById('correctUsers').innerHTML = '';
+    document.getElementById('correctCount').innerText = '';
+    // Hide winner's summary section
+    document.querySelector('.summary-section').style.display = 'none';
+    // Hide correct users list
+    document.querySelector('.user-list-card h3').style.visibility = 'hidden';
+    document.getElementById('correctUsers').style.display = 'none';
+    // Always show the restart button
+    const restartBtn = document.getElementById('restartBtn');
+    if (restartBtn) restartBtn.style.display = '';
 }
 
 function restartQuiz() {
@@ -73,30 +82,39 @@ function updateButtonStates(action) {
 socket.on('question', (q) => {
     document.getElementById('quizProgress').innerText = `Question ${q.number} of ${q.total}`;
     document.getElementById('correctUsers').innerHTML = '';
+    document.getElementById('correctCount').innerText = '';
     document.getElementById('winner').innerText = '';
+    // Hide correct users list at the start of a question
+    document.querySelector('.user-list-card h3').style.visibility = 'hidden';
+    document.getElementById('correctUsers').style.display = 'none';
 });
 
 socket.on('showCorrect', users => {
-    document.getElementById('correctUsers').innerHTML = users.map(u => `<li>${u}</li>`).join('');
+    const correctList = users || [];
+    document.getElementById('correctUsers').innerHTML = renderUserList(correctList, correctList);
+    document.getElementById('correctCount').innerText = `(${correctList.length})`;
+    // Show correct users list after end question
+    document.querySelector('.user-list-card h3').style.visibility = 'visible';
+    document.getElementById('correctUsers').style.display = '';
 });
 
 socket.on('winner', winner => {
     document.getElementById('winner').innerText = "Winner: " + winner;
 });
 
-socket.on('quizFinished', (winnersHistory) => {
-    let summary = '<h3>Winners Summary</h3><ul>';
-    winnersHistory.forEach((winner, idx) => {
-        summary += `<li>Question ${idx + 1}: ${winner || 'No winner'}</li>`;
-    });
-    summary += '</ul>';
-    document.getElementById('quizProgress').innerHTML = summary;
+socket.on('quizFinished', ({ winnersHistory, questions }) => {
+    document.getElementById('winnersSummary').innerHTML = renderWinnersSummary(winnersHistory, questions);
+    document.querySelector('.summary-section').style.display = '';
     document.getElementById('winner').innerText = '';
     updateButtonStates('finish');
+    const restartBtn = document.getElementById('restartBtn');
+    if (restartBtn) restartBtn.style.display = '';
 });
 
 socket.on('userList', users => {
-    document.getElementById('connectedUsers').innerHTML = users.map(u => `<li>${u}</li>`).join('');
+    const userList = users || [];
+    document.getElementById('connectedUsers').innerHTML = renderUserList(userList);
+    document.getElementById('connectedCount').innerText = `(${userList.length})`;
 });
 
 socket.on('hostError', msg => {
@@ -106,16 +124,54 @@ socket.on('hostError', msg => {
 socket.on('quizRestarted', () => {
     // Only update the UI, don't emit another event
     resetHostUI();
+    // Always show the restart button
+    const restartBtn = document.getElementById('restartBtn');
+    if (restartBtn) restartBtn.style.display = '';
 });
 
 // Create the restart button on page load
 window.onload = () => {
     updateButtonStates('restart');
-    if (!document.getElementById('restartBtn')) {
-        const restartBtn = document.createElement('button');
+    let restartBtn = document.getElementById('restartBtn');
+    if (!restartBtn) {
+        restartBtn = document.createElement('button');
         restartBtn.id = 'restartBtn';
         restartBtn.innerText = 'Restart';
         restartBtn.onclick = restartQuiz;
         document.body.appendChild(restartBtn);
+    } else {
+        restartBtn.onclick = restartQuiz;
+        restartBtn.style.display = '';
     }
+    // Hide winner's summary section on load
+    document.querySelector('.summary-section').style.display = 'none';
+    // Hide correct users list on load
+    document.querySelector('.user-list-card h3').style.visibility = 'hidden';
+    document.getElementById('correctUsers').style.display = 'none';
 };
+
+function renderWinnersSummary(winnersHistory, questions) {
+    if (!Array.isArray(winnersHistory) || !Array.isArray(questions)) return '';
+    let html = '<table class="winner-table">';
+    html += '<tr><th>#</th><th>Question</th><th>Winner</th></tr>';
+    for (let i = 0; i < questions.length; i++) {
+        html += `<tr><td>${i + 1}</td><td>${questions[i].text}</td><td>`;
+        if (winnersHistory[i]) {
+            html += `<span class="winner-badge">${winnersHistory[i]}</span>`;
+        } else {
+            html += '<span class="no-winner">No winner</span>';
+        }
+        html += '</td></tr>';
+    }
+    html += '</table>';
+    return html;
+}
+
+function renderUserList(users, highlightList = []) {
+    if (!Array.isArray(users)) return '';
+    return users.map(u => {
+        const initials = u[0] ? u[0].toUpperCase() : '?';
+        const isCorrect = highlightList.includes(u);
+        return `<li><span class="user-avatar">${initials}</span>${u}${isCorrect ? '<span class="user-badge">✔</span>' : ''}</li>`;
+    }).join('');
+}

@@ -109,7 +109,7 @@ io.on('connection', (socket) => {
                 total: questions.length
             });
         } else {
-            io.emit('quizFinished', winnersHistory);
+            io.emit('quizFinished', { winnersHistory, questions });
         }
     });
 

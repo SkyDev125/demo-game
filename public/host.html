@@ -7,20 +7,31 @@
 </head>
 
 <body>
-    <h2>Host Controls</h2>
-    <button onclick="startQuestion()">Start Questions</button>
-    <button onclick="endQuestion()">End Question & Pick Winner</button>
-    <button onclick="nextQuestion()">Next Question</button>
-    <div>
-        <h3>Correct Users:</h3>
-        <ul id="correctUsers"></ul>
+    <div class="container">
+        <h2>Quiz Host Controls</h2>
+        <div class="host-controls">
+            <button onclick="startQuestion()">Start Question</button>
+            <button onclick="endQuestion()">End Question & Pick Winner</button>
+            <button onclick="nextQuestion()">Next Question</button>
+            <button id="restartBtn">Restart</button>
+        </div>
+        <div id="quizProgress"></div>
+        <div id="winner"></div>
+        <div class="summary-section">
+            <h3>Winner's Summary</h3>
+            <div id="winnersSummary"></div>
+        </div>
+        <div class="users-section">
+            <div class="user-list-card">
+                <h3>Correct Users <span id="correctCount" class="user-count"></span></h3>
+                <ul id="correctUsers" class="user-list"></ul>
+            </div>
+            <div class="user-list-card">
+                <h3>Connected Users <span id="connectedCount" class="user-count"></span></h3>
+                <ul id="connectedUsers" class="user-list"></ul>
+            </div>
+        </div>
     </div>
-    <div>
-        <h3>Connected Users:</h3>
-        <ul id="connectedUsers"></ul>
-    </div>
-    <div id="winner"></div>
-    <div id="quizProgress"></div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="host.js"></script>
 </body>

@@ -7,17 +7,19 @@
 </head>
 
 <body>
-    <h2>Enter Username</h2>
-    <input id="username" placeholder="Username">
-    <button onclick="join()">Join</button>
-    <div id="quiz" style="display:none;">
-        <div id="question"></div>
-        <div id="options"></div>
-        <input id="answer" placeholder="Your answer" style="display:none;">
-        <div id="result"></div>
-        <div id="progress"></div>
+    <div class="container">
+        <h2>Join the Quiz</h2>
+        <input id="username" placeholder="Username">
+        <button onclick="join()">Join</button>
+        <div id="quiz" style="display:none;">
+            <div id="question" style="margin-bottom:1em;"></div>
+            <div id="options"></div>
+            <input id="answer" placeholder="Your answer" style="display:none;">
+            <div id="result" style="margin-top:1em;"></div>
+            <div id="progress" style="margin-top:1em;"></div>
+        </div>
+        <div id="winner" style="margin-top:1.5em;"></div>
     </div>
-    <div id="winner"></div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
 </body>
