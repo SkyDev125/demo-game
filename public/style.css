@@ -38,6 +38,7 @@ h3 {
     margin-top: 2em;
     width: 100%;
     max-width: 480px;
+    box-sizing: border-box;
 }
 
 input[type="text"],
@@ -62,6 +63,69 @@ textarea {
     margin-bottom: 1em;
     background: #f9fafb;
     transition: border 0.2s;
+}
+
+input[type="text"] {
+    width: 220px !important;
+    padding: 0.7em 1em !important;
+    border: 1.5px solid var(--border) !important;
+    border-radius: 0.5em !important;
+    font-size: 1.08em !important;
+    background: #f9fafb !important;
+    transition: border 0.2s, box-shadow 0.2s !important;
+    box-shadow: 0 1px 4px 0 rgba(79,140,255,0.06) !important;
+    outline: none !important;
+    margin-right: 0.5em !important;
+    margin-bottom: 1em !important;
+}
+
+input#username {
+    display: block;
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0;
+    padding: 0.7em 1em !important;
+    border: 1.5px solid var(--primary) !important;
+    border-radius: 0.5em !important;
+    font-size: 1.08em !important;
+    background: #f9fafb !important;
+    transition: border 0.2s, box-shadow 0.2s !important;
+    box-shadow: 0 1px 4px 0 rgba(79,140,255,0.06) !important;
+    outline: none !important;
+    margin: 0 0 1em 0 !important;
+    color: var(--text) !important;
+}
+
+input#username:focus {
+    border-color: var(--primary-dark) !important;
+    box-shadow: 0 2px 8px 0 rgba(79,140,255,0.13) !important;
+    background: #fff !important;
+}
+
+@media (max-width: 600px) {
+    input#username {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-right: 0 !important;
+        margin-bottom: 0.7em !important;
+        font-size: 1em !important;
+    }
+}
+
+input[type="text"]:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 2px 8px 0 rgba(79,140,255,0.13) !important;
+    background: #fff !important;
+}
+
+@media (max-width: 600px) {
+    input[type="text"] {
+        width: 100% !important;
+        margin-right: 0 !important;
+        margin-bottom: 0.7em !important;
+        font-size: 1em !important;
+    }
 }
 
 input:focus,
