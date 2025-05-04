@@ -1,36 +1,75 @@
+// Simple quiz host controller
 const socket = io();
 
-// Identify as host
+// Identify as host on load
 socket.emit('host-join');
-socket.on('host-ack', () => {
-    // Host acknowledged
-});
 
 function startQuestion() {
     socket.emit('startQuestion');
-    document.querySelector('button[onclick="startQuestion()"]')?.setAttribute('disabled', 'disabled');
-    // Enable End Question & Pick Winner, disable Next Question
-    document.querySelector('button[onclick="endQuestion()"]')?.removeAttribute('disabled');
-    document.querySelector('button[onclick="nextQuestion()"]')?.setAttribute('disabled', 'disabled');
+    updateButtonStates('start');
 }
 
 function endQuestion() {
     socket.emit('endQuestion');
     socket.emit('pickWinner');
-    // Disable End Question & Pick Winner, enable Next Question
-    document.querySelector('button[onclick="endQuestion()"]')?.setAttribute('disabled', 'disabled');
-    document.querySelector('button[onclick="nextQuestion()"]')?.removeAttribute('disabled');
+    updateButtonStates('end');
 }
 
 function nextQuestion() {
     socket.emit('nextQuestion');
-    // Enable End Question & Pick Winner, disable Next Question
-    document.querySelector('button[onclick="endQuestion()"]')?.removeAttribute('disabled');
-    document.querySelector('button[onclick="nextQuestion()"]')?.setAttribute('disabled', 'disabled');
-    // Clear winner display
+    updateButtonStates('next');
     document.getElementById('winner').innerText = '';
 }
 
+// Separate UI reset from event emission
+function resetHostUI() {
+    updateButtonStates('restart');
+    document.getElementById('quizProgress').innerText = '';
+    document.getElementById('winner').innerText = '';
+    document.getElementById('correctUsers').innerHTML = '';
+}
+
+function restartQuiz() {
+    // Only emit the event, don't update UI here
+    socket.emit('restartQuiz');
+}
+
+// Update button states based on current action
+function updateButtonStates(action) {
+    const startBtn = document.querySelector('button[onclick="startQuestion()"]');
+    const endBtn = document.querySelector('button[onclick="endQuestion()"]');
+    const nextBtn = document.querySelector('button[onclick="nextQuestion()"]');
+
+    switch (action) {
+        case 'start':
+            startBtn.disabled = true;
+            endBtn.disabled = false;
+            nextBtn.disabled = true;
+            break;
+        case 'end':
+            startBtn.disabled = true;
+            endBtn.disabled = true;
+            nextBtn.disabled = false;
+            break;
+        case 'next':
+            startBtn.disabled = true;
+            endBtn.disabled = false;
+            nextBtn.disabled = true;
+            break;
+        case 'restart':
+            startBtn.disabled = false;
+            endBtn.disabled = true;
+            nextBtn.disabled = true;
+            break;
+        case 'finish':
+            startBtn.disabled = true;
+            endBtn.disabled = true;
+            nextBtn.disabled = true;
+            break;
+    }
+}
+
+// Handle server events
 socket.on('question', (q) => {
     document.getElementById('quizProgress').innerText = `Question ${q.number} of ${q.total}`;
     document.getElementById('correctUsers').innerHTML = '';
@@ -41,21 +80,42 @@ socket.on('showCorrect', users => {
     document.getElementById('correctUsers').innerHTML = users.map(u => `<li>${u}</li>`).join('');
 });
 
-socket.on('quizFinished', () => {
-    document.getElementById('quizProgress').innerText = 'Quiz finished!';
-});
-
 socket.on('winner', winner => {
     document.getElementById('winner').innerText = "Winner: " + winner;
+});
+
+socket.on('quizFinished', (winnersHistory) => {
+    let summary = '<h3>Winners Summary</h3><ul>';
+    winnersHistory.forEach((winner, idx) => {
+        summary += `<li>Question ${idx + 1}: ${winner || 'No winner'}</li>`;
+    });
+    summary += '</ul>';
+    document.getElementById('quizProgress').innerHTML = summary;
+    document.getElementById('winner').innerText = '';
+    updateButtonStates('finish');
 });
 
 socket.on('userList', users => {
     document.getElementById('connectedUsers').innerHTML = users.map(u => `<li>${u}</li>`).join('');
 });
 
-// On page load, only Start Questions is enabled
+socket.on('hostError', msg => {
+    alert(msg);
+});
+
+socket.on('quizRestarted', () => {
+    // Only update the UI, don't emit another event
+    resetHostUI();
+});
+
+// Create the restart button on page load
 window.onload = () => {
-    document.querySelector('button[onclick="startQuestion()"]')?.removeAttribute('disabled');
-    document.querySelector('button[onclick="endQuestion()"]')?.setAttribute('disabled', 'disabled');
-    document.querySelector('button[onclick="nextQuestion()"]')?.setAttribute('disabled', 'disabled');
+    updateButtonStates('restart');
+    if (!document.getElementById('restartBtn')) {
+        const restartBtn = document.createElement('button');
+        restartBtn.id = 'restartBtn';
+        restartBtn.innerText = 'Restart';
+        restartBtn.onclick = restartQuiz;
+        document.body.appendChild(restartBtn);
+    }
 };
