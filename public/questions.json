@@ -1,42 +1,32 @@
 [
     {
-        "text": "What is 2 + 2?",
+        "text": "O que é que os fundadores da tuna estavam a comer na reunião de criação da tuna?",
         "options": [
-            "3",
-            "4",
-            "5",
-            "6"
+            "Pizzas",
+            "Hamburgueres",
+            "Bifanas",
+            "Tostas Mistas"
         ],
-        "answer": "4"
+        "answer": "Tostas Mistas"
     },
     {
-        "text": "What is the capital of France?",
+        "text": "Qual foi a data de fundação da TMIST?",
         "options": [
-            "London",
-            "Berlin",
-            "Paris",
-            "Rome"
+            "28 de Outubro de 2007",
+            "16 de Setembro de 2006",
+            "19 de Setembro de 2007",
+            "19 de Setembro de 2006"
         ],
-        "answer": "Paris"
+        "answer": "19 de Setembro de 2006"
     },
     {
-        "text": "What color is the sky on a clear day?",
+        "text": "Quem escreveu a adaptação da \"A Problemática Colocação de um Mastro\" ?",
         "options": [
-            "Red",
-            "Blue",
-            "Green",
-            "Yellow"
+            "Senhor Teles",
+            "Cera",
+            "Skyfall",
+            "Marty"
         ],
         "answer": "Blue"
-    },
-    {
-        "text": "What is the largest planet in our solar system?",
-        "options": [
-            "Earth",
-            "Mars",
-            "Jupiter",
-            "Saturn"
-        ],
-        "answer": "Jupiter"
     }
 ]
