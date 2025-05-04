@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quiz Host</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h2>Host Controls</h2>
+    <button onclick="startQuestion()">Start Questions</button>
+    <button onclick="endQuestion()">End Question & Pick Winner</button>
+    <button onclick="nextQuestion()">Next Question</button>
+    <div>
+        <h3>Correct Users:</h3>
+        <ul id="correctUsers"></ul>
+    </div>
+    <div>
+        <h3>Connected Users:</h3>
+        <ul id="connectedUsers"></ul>
+    </div>
+    <div id="winner"></div>
+    <div id="quizProgress"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="host.js"></script>
+</body>
+
+</html>

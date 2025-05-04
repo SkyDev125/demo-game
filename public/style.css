@@ -1,0 +1,19 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 2em;
+}
+
+input,
+button {
+    margin: 0.5em;
+}
+
+#quiz,
+#winner,
+#quizProgress {
+    margin-top: 1em;
+}
+
+#correctUsers {
+    margin-top: 1em;
+}
