@@ -377,11 +377,11 @@ li {
   }
   .container {
     box-sizing: border-box;
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: 0;
-    margin-right: 0;
-    padding: 1em 5vw;
+    width: 95vw;
+    max-width: 95vw;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1em 0.5em;
     border-radius: 0.5em;
     box-shadow: none;
   }
