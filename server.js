@@ -141,8 +141,11 @@ io.on('connection', (socket) => {
     socket.on('pickWinner', () => {
         if (socket.id !== hostSocketId) return;
         let winner = null;
-        if (correctUsers.length > 0) {
-            winner = correctUsers[Math.floor(Math.random() * correctUsers.length)];
+        // Exclude users who have already won
+        const previousWinners = new Set(winnersHistory.filter(Boolean));
+        const eligibleUsers = correctUsers.filter(u => !previousWinners.has(u));
+        if (eligibleUsers.length > 0) {
+            winner = eligibleUsers[Math.floor(Math.random() * eligibleUsers.length)];
             winnersHistory[questionIndex] = winner;
         } else {
             winnersHistory[questionIndex] = null;

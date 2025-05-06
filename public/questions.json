@@ -1,32 +1,32 @@
 [
     {
-        "text": "O que é que os fundadores da tuna estavam a comer na reunião de criação da tuna?",
+        "text": "O que os fundadores estavam a comer na reunião da criação da TMIST?",
         "options": [
             "Pizzas",
-            "Hamburgueres",
+            "Tostas Mistas",
             "Bifanas",
-            "Tostas Mistas"
+            "Hamburgueres"
         ],
         "answer": "Tostas Mistas"
     },
     {
-        "text": "Qual foi a data de fundação da TMIST?",
-        "options": [
-            "28 de Outubro de 2007",
-            "16 de Setembro de 2006",
-            "19 de Setembro de 2007",
-            "19 de Setembro de 2006"
-        ],
-        "answer": "19 de Setembro de 2006"
-    },
-    {
-        "text": "Quem escreveu a adaptação da \"A Problemática Colocação de um Mastro\" ?",
+        "text": "Quem escreveu a nossa adaptação da musica \"A problemática colocação de um mastro\"?",
         "options": [
             "Senhor Teles",
             "Cera",
-            "Skyfall",
+            "SkyFall",
             "Marty"
         ],
-        "answer": "Blue"
+        "answer": "Senhor Teles"
+    },
+    {
+        "text": "Quando foi fundada a TMIST?",
+        "options": [
+            "23 de Outubro de 2007",
+            "19 de setembro de 2007",
+            "19 de Outubro de 2006",
+            "19 de setembro de 2006"
+        ],
+        "answer": "19 de setembro de 2006"
     }
 ]
